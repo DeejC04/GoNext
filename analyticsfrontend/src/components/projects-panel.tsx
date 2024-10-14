@@ -5,6 +5,10 @@ import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { getData, getProjects, getTasks } from "@/app/actions";
+
+
+
 
 const singleProjectInfo = {
     "1": {
@@ -51,10 +55,27 @@ const singleProjectInfo = {
     },
 };
 
-export default function ProjectsPanel() {
+export default async function ProjectsPanel() {
+    const projectInfo = await getProjects();
+
+    const projectWithTasks = await Promise.all(
+        projectInfo.map(async (project) => {
+            const tasks = await getTasks(project.id);
+            console.log(tasks)
+            return {
+                ...project,
+                tasksList: tasks,
+                taskCount: tasks.length,
+                tasksCompleted: tasks.filter(task => task.completed).length,
+                tasksName: tasks.name
+            };
+        })
+    );
+    
+    console.log(process.env.NEXT_PUBLIC_DATABASE_URL);
     return (
         <div className="h-screen p-4">
-            <Card className="w-full md:w-1/4 flex flex-col">
+            <Card className="w-full md:w-1/3 flex flex-col">
                 <CardHeader className="flex flex-row justify-between">
                     <div>
                         <CardTitle>Projects</CardTitle>
@@ -99,24 +120,38 @@ export default function ProjectsPanel() {
                 </CardHeader>
                 <CardContent className="flex-grow overflow-hidden">
                     <ScrollArea className="flex-grow">
-                        <div className="space-y-4 pr-4">
-                            {Object.keys(singleProjectInfo).map((key) => {
+                        <div className="space-y-4">
+                            {/* {Object.keys(singleProjectInfo).map((key) => {
                                 const project = singleProjectInfo[key];
                                 return (
                                     <SingleProject
                                         key={key}
-                                        name={project.name}
+                                        name={project.id}
                                         description={project.description}
                                         taskCount={project.taskCount}
                                         tasksCompleted={project.tasksCompleted}
                                         taskList={project.tasksList}
                                     />
                                 );
-                            })}
+                            })} */}
+
+{projectWithTasks.map((project) => (
+                                <SingleProject
+                                    key={project.id}
+                                    name={project.name}
+                                    description={project.description}
+                                    taskCount={project.taskCount}
+                                    tasksCompleted={project.tasksCompleted}
+                                    taskList={project.tasksList}
+                                />
+                            ))}
                         </div>
                     </ScrollArea>
                 </CardContent>
             </Card>
+            <div>
+                {projectInfo[0].name}
+            </div>
         </div>
     )
 }

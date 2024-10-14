@@ -32,7 +32,7 @@ export default function SingleProject({ name, description, taskCount, tasksCompl
   description: string,
   taskCount: number,
   tasksCompleted: number
-  taskList: Array<{ id: number, title: string, completed: boolean }>
+  taskList: any
 }) {
   const [tasks, setTasks] = useState(taskList)
 
@@ -53,15 +53,15 @@ export default function SingleProject({ name, description, taskCount, tasksCompl
   return (
     <Card className="mx-auto flex flex-col">
       <CardContent className="flex flex-col p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-          <div className="flex flex-col space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+          <div className="flex flex-col space-y-4">
             <CardHeader className="p-0">
               <CardTitle className="text-2xl font-bold">{name}</CardTitle>
               <CardDescription className="max-h-10 overflow-hidden">{description}</CardDescription>
             </CardHeader>
             <Card className="flex flex-col p-4">
               <CardContent className="p-0 flex flex-col max-h-[150px]">
-                <h3 className="text-lg font-semibold mb-4">Tasks</h3>
+                <h3 className="text-lg font-semibold mb-4 md:mb-2 md:text-base">Tasks</h3>
                 <ScrollArea className="flex-grow">
                   <ul className="space-y-3">
                     {tasks.map(task => (
@@ -76,7 +76,7 @@ export default function SingleProject({ name, description, taskCount, tasksCompl
                           className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ${task.completed ? 'line-through text-muted-foreground' : ''
                             }`}
                         >
-                          {task.title}
+                          {task.name}
                         </label>
                       </li>
                     ))}
@@ -99,7 +99,7 @@ export default function SingleProject({ name, description, taskCount, tasksCompl
                   data={chartData}
                   dataKey="value"
                   nameKey="tasks"
-                  innerRadius={60}
+                  innerRadius={40}
                   strokeWidth={5}
                 >
                   <Label
@@ -115,7 +115,7 @@ export default function SingleProject({ name, description, taskCount, tasksCompl
                             <tspan
                               x={viewBox.cx}
                               y={viewBox.cy}
-                              className="fill-foreground text-3xl font-bold"
+                              className="fill-foreground text-2xl font-bold"
                             >
                               {Math.round((completedTasks / totalTasks) * 100)}%
                             </tspan>
